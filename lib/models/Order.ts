@@ -33,9 +33,9 @@ export interface IOrder extends Document {
     country: string
     phone: string
   }
-  paymentMethod: {
-    cardBrand: string
-    last4: string
+  paymentMethod?: {
+    cardBrand?: string
+    last4?: string
   }
   paymentStatus: "pending" | "paid" | "failed"
   totalPrice: number
@@ -90,8 +90,8 @@ const OrderSchema = new Schema<IOrder>(
       phone: { type: String, required: true }
     },
     paymentMethod: {
-      cardBrand: { type: String, required: true },
-      last4: { type: String, required: true }
+      cardBrand: { type: String },
+      last4: { type: String }
     },
     paymentStatus: {
       type: String,
