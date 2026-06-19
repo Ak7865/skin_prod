@@ -560,6 +560,74 @@ export async function placeOrder(formData: FormData) {
   }
 }
 
+export async function placeRazorpayOrder(formData: FormData) {
+  try {
+    const userId = await getAuthenticatedUser()
+    await dbConnect()
+
+    const addressId = formData.get("addressId") as string
+
+    const address = await Address.findOne({ _id: addressId, user: userId })
+    if (!address) return { success: false, error: "Please select a shipping address" }
+
+    const cart = await Cart.findOne({ user: userId }).populate("items.product")
+    if (!cart || cart.items.length === 0) {
+      return { success: false, error: "Your shopping cart is empty" }
+    }
+
+    const orderItems: any[] = []
+    let totalAccumulator = 0
+
+    for (const item of cart.items) {
+      const prod = item.product as any
+      if (!prod || prod.stock < item.quantity) {
+        return { success: false, error: `Product '${prod?.name || "Unknown"}' is out of stock.` }
+      }
+
+      const priceAfterDiscount = prod.price * (1 - prod.discount / 100)
+      orderItems.push({
+        product: prod._id,
+        name: prod.name,
+        price: priceAfterDiscount,
+        quantity: item.quantity,
+        image: prod.images[0]?.secure_url || ""
+      })
+      totalAccumulator += priceAfterDiscount * item.quantity
+    }
+
+    const shippingPrice = totalAccumulator > 50 ? 0 : 5
+    const taxPrice = parseFloat((totalAccumulator * 0.08).toFixed(2))
+    const grandTotal = parseFloat((totalAccumulator + shippingPrice + taxPrice).toFixed(2))
+
+    const newOrder = new Order({
+      user: userId,
+      items: orderItems,
+      shippingAddress: {
+        name: address.name,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        postalCode: address.postalCode,
+        country: address.country,
+        phone: address.phone
+      },
+      paymentStatus: "pending",
+      totalPrice: parseFloat(totalAccumulator.toFixed(2)),
+      shippingPrice,
+      taxPrice,
+      grandTotal,
+      status: "pending_confirmation",
+      statusHistory: [{ status: "pending_confirmation", note: "Order placed successfully" }]
+    })
+
+    await newOrder.save()
+
+    return { success: true, orderId: newOrder._id.toString() }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
 export async function getOrders() {
   try {
     const userId = await getAuthenticatedUser()

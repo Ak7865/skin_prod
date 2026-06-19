@@ -45,6 +45,8 @@ export interface IOrder extends Document {
   status: "pending_confirmation" | "confirmed" | "shipping" | "tracking_updated" | "delivered" | "cancelled"
   statusHistory: IOrderStatusHistory[]
   tracking?: IOrderTracking
+  razorpayOrderId?: string
+  razorpayPaymentId?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -107,7 +109,9 @@ const OrderSchema = new Schema<IOrder>(
       index: true
     },
     statusHistory: { type: [OrderStatusHistorySchema], default: [] },
-    tracking: { type: OrderTrackingSchema, default: {} }
+    tracking: { type: OrderTrackingSchema, default: {} },
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String }
   },
   { timestamps: true }
 )
