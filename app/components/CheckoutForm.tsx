@@ -72,7 +72,7 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
     e.preventDefault()
     setFormError("")
     const formData = new FormData(e.currentTarget)
-    
+
     startTransition(async () => {
       const res = await saveAddress(formData)
       if (res.success) {
@@ -89,7 +89,7 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
     e.preventDefault()
     setFormError("")
     const formData = new FormData(e.currentTarget)
-    
+
     startTransition(async () => {
       const res = await savePaymentMethod(formData)
       if (res.success) {
@@ -129,10 +129,10 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
+
       {/* Checkout Selection columns */}
       <div className="lg:col-span-2 space-y-8">
-        
+
         {/* Address Selection */}
         <div className="bg-white border border-brand-rose/15 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
@@ -182,6 +182,13 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="text-[10px] font-bold text-brand-charcoal/50 uppercase block mb-1">Country</label>
+                  <input required name="country" type="text" placeholder="United States" className="w-full bg-white border border-brand-rose/20 rounded-lg text-xs p-2.5 focus:outline-none focus:ring-1 focus:ring-brand-emerald" />
+                </div>
+              </div>
+
               <div className="flex items-center gap-2">
                 <input id="isDefault" name="isDefault" value="true" type="checkbox" className="rounded border-brand-rose/25 text-brand-emerald focus:ring-brand-emerald" />
                 <label htmlFor="isDefault" className="text-xs text-brand-charcoal/70">Set as default shipping address</label>
@@ -194,6 +201,7 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
                 </button>
               </div>
             </form>
+
           ) : addresses.length === 0 ? (
             <p className="text-xs text-brand-charcoal/45 italic py-2">No shipping addresses saved. Please add one above to complete purchase.</p>
           ) : (
@@ -204,11 +212,10 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
                   <div
                     key={addr._id}
                     onClick={() => setSelectedAddressId(addr._id)}
-                    className={`border rounded-2xl p-4 cursor-pointer relative transition-all ${
-                      isSelected
-                        ? "border-brand-emerald bg-brand-sage/10 shadow-sm"
-                        : "border-brand-rose/15 hover:border-brand-rose/45 bg-white"
-                    }`}
+                    className={`border rounded-2xl p-4 cursor-pointer relative transition-all ${isSelected
+                      ? "border-brand-emerald bg-brand-sage/10 shadow-sm"
+                      : "border-brand-rose/15 hover:border-brand-rose/45 bg-white"
+                      }`}
                   >
                     {isSelected && (
                       <div className="absolute top-4 right-4 bg-brand-emerald text-brand-cream rounded-full p-0.5">
@@ -293,11 +300,10 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
                   <div
                     key={c._id}
                     onClick={() => setSelectedCardId(c._id)}
-                    className={`border rounded-2xl p-4 cursor-pointer relative transition-all ${
-                      isSelected
-                        ? "border-brand-emerald bg-brand-sage/10 shadow-sm"
-                        : "border-brand-rose/15 hover:border-brand-rose/45 bg-white"
-                    }`}
+                    className={`border rounded-2xl p-4 cursor-pointer relative transition-all ${isSelected
+                      ? "border-brand-emerald bg-brand-sage/10 shadow-sm"
+                      : "border-brand-rose/15 hover:border-brand-rose/45 bg-white"
+                      }`}
                   >
                     {isSelected && (
                       <div className="absolute top-4 right-4 bg-brand-emerald text-brand-cream rounded-full p-0.5">
@@ -341,7 +347,7 @@ export default function CheckoutForm({ cart, addresses, cards }: CheckoutFormPro
               <span>Subtotal</span>
               <span className="font-semibold text-brand-charcoal">${subtotal.toFixed(2)}</span>
             </div>
-            
+
             <div className="flex justify-between text-brand-charcoal/70">
               <span>Shipping</span>
               <span className="font-semibold text-brand-charcoal">

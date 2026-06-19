@@ -23,6 +23,15 @@ export default async function CheckoutPage() {
   const addresses = await Address.find({ user: session.user.id })
   const cards = await PaymentMethod.find({ user: session.user.id })
 
+  // Normalize legacy addresses that may be missing `country`
+  for (const addr of addresses) {
+    if (!addr.country) {
+      // Address schema expects `country`, so provide a fallback.
+      addr.country = "United States"
+    }
+  }
+
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       <div>
