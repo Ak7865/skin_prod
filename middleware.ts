@@ -47,7 +47,7 @@ function isRateLimited(ip: string, isAuthRoute: boolean): boolean {
   return true
 }
 
-export async function proxy(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone()
   const { pathname } = url
 
