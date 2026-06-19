@@ -1,0 +1,105 @@
+
+> skin_prod@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.2.9 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.27:3000
+- Environments: .env.local
+✓ Ready in 1560ms
+  next-swc build: wasm build @next/swc-wasm-nodejs
+⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\ah076\OneDrive\Desktop\skin_prod\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\C:\Users\ah076\OneDrive\Desktop\skin_prod\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+  Skipping creating a lockfile at C:\Users\ah076\OneDrive\Desktop\skin_prod\.next\dev\lock because we're using WASM bindings
+
+○ Compiling proxy ...
+○ Compiling /api/seed ...
+Seeding Error: Error: querySrv ECONNREFUSED _mongodb._tcp.skin-prod.tnv2ovw.mongodb.net
+    at ignore-listed frames {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.skin-prod.tnv2ovw.mongodb.net'
+}
+ GET /api/seed 500 in 16.4s (next.js: 15.0s, proxy.ts: 1103ms, application-code: 273ms)
+○ Compiling /admin/dashboard ...
+ GET /api/seed 200 in 3.7s (next.js: 255ms, proxy.ts: 2.7s, application-code: 749ms)
+ GET /admin/dashboard 200 in 34.3s (next.js: 27.6s, proxy.ts: 145ms, application-code: 6.6s)
+ GET /admin/orders 200 in 2.7s (next.js: 2.2s, proxy.ts: 19ms, application-code: 464ms)
+ GET /admin/orders?status=pending_confirmation 200 in 228ms (next.js: 9ms, proxy.ts: 18ms, application-code: 201ms)
+ GET /admin/orders?status=tracking_updated 200 in 260ms (next.js: 11ms, proxy.ts: 23ms, application-code: 226ms)
+ GET /admin/orders?status=delivered 200 in 240ms (next.js: 7ms, proxy.ts: 14ms, application-code: 220ms)
+ GET /admin/orders?status=cancelled 200 in 565ms (next.js: 6ms, proxy.ts: 11ms, application-code: 548ms)
+ GET /admin/notifications 200 in 1576ms (next.js: 1178ms, proxy.ts: 9ms, application-code: 389ms)
+ GET /admin/customers 200 in 2.1s (next.js: 1632ms, proxy.ts: 10ms, application-code: 421ms)
+ GET / 200 in 3.3s (next.js: 1892ms, proxy.ts: 19ms, application-code: 1373ms)
+ GET /admin/customers 200 in 591ms (next.js: 40ms, proxy.ts: 22ms, application-code: 529ms)
+ GET /api/auth/csrf 200 in 4.9s (next.js: 4.8s, proxy.ts: 10ms, application-code: 25ms)
+ POST /api/auth/signout 200 in 61ms (next.js: 27ms, proxy.ts: 13ms, application-code: 21ms)
+ GET /login?loggedOut=true 200 in 3.4s (next.js: 2.8s, proxy.ts: 17ms, application-code: 509ms)
+ GET /login?callbackUrl=%2Fadmin%2Fcustomers 200 in 240ms (next.js: 10ms, proxy.ts: 16ms, application-code: 214ms)
+ GET /api/auth/providers 200 in 117ms (next.js: 81ms, proxy.ts: 13ms, application-code: 24ms)
+ GET /api/auth/csrf 200 in 35ms (next.js: 10ms, proxy.ts: 17ms, application-code: 8ms)
+ POST /api/auth/callback/credentials? 200 in 584ms (next.js: 13ms, proxy.ts: 10ms, application-code: 561ms)
+ GET /auth-callback?callbackUrl=%2F 200 in 1385ms (next.js: 1216ms, proxy.ts: 10ms, application-code: 159ms)
+ GET /auth-callback?callbackUrl=%2F 200 in 148ms (next.js: 9ms, proxy.ts: 30ms, application-code: 110ms)
+ GET / 200 in 1016ms (next.js: 20ms, proxy.ts: 10ms, application-code: 986ms)
+ GET / 200 in 883ms (next.js: 8ms, proxy.ts: 30ms, application-code: 845ms)
+ GET /orders 200 in 2.4s (next.js: 1522ms, proxy.ts: 11ms, application-code: 843ms)
+ GET /products 200 in 4.3s (next.js: 1750ms, proxy.ts: 10ms, application-code: 2.5s)
+ POST /products 200 in 3.1s (next.js: 5ms, proxy.ts: 12ms, application-code: 3.1s)
+  └─ ƒ <inline action>({}) in 1773ms ..//app/(customer)/products/page.tsx
+ GET /cart 200 in 2.4s (next.js: 11ms, proxy.ts: 33ms, application-code: 2.3s)
+ GET /cart 200 in 5.4s (next.js: 2.7s, proxy.ts: 11ms, application-code: 2.6s)
+ GET /checkout 200 in 4.4s (next.js: 2.2s, proxy.ts: 8ms, application-code: 2.2s)
+ POST /checkout 200 in 591ms (next.js: 13ms, proxy.ts: 191ms, application-code: 388ms)
+  └─ ƒ saveAddress({}) in 60ms ..//lib/actions/customerActions.ts
+ POST /checkout 200 in 184ms (next.js: 5ms, proxy.ts: 18ms, application-code: 161ms)
+  └─ ƒ saveAddress({}) in 145ms ..//lib/actions/customerActions.ts
+ POST /checkout 200 in 169ms (next.js: 6ms, proxy.ts: 17ms, application-code: 146ms)
+  └─ ƒ saveAddress({}) in 127ms ..//lib/actions/customerActions.ts
+ POST /checkout 200 in 717ms (next.js: 5ms, proxy.ts: 14ms, application-code: 699ms)
+  └─ ƒ savePaymentMethod({}) in 118ms ..//lib/actions/customerActions.ts
+ GET /checkout 200 in 575ms (next.js: 6ms, proxy.ts: 16ms, application-code: 553ms)
+ POST /checkout 200 in 106ms (next.js: 10ms, proxy.ts: 26ms, application-code: 69ms)
+  └─ ƒ saveAddress({}) in 26ms ..//lib/actions/customerActions.ts
+ POST /checkout 200 in 81ms (next.js: 13ms, proxy.ts: 28ms, application-code: 41ms)
+  └─ ƒ saveAddress({}) in 14ms ..//lib/actions/customerActions.ts
+ POST /checkout 200 in 800ms (next.js: 5ms, proxy.ts: 15ms, application-code: 780ms)
+  └─ ƒ saveAddress({}) in 149ms ..//lib/actions/customerActions.ts
+ GET /checkout 200 in 628ms (next.js: 7ms, proxy.ts: 15ms, application-code: 606ms)
+ GET /checkout 200 in 953ms (next.js: 8ms, proxy.ts: 11ms, application-code: 934ms)
+ GET / 200 in 784ms (next.js: 37ms, proxy.ts: 21ms, application-code: 726ms)
+ POST /checkout 200 in 1928ms (next.js: 5ms, proxy.ts: 14ms, application-code: 1909ms)
+  └─ ƒ placeOrder({}) in 1194ms ..//lib/actions/customerActions.ts
+ GET /orders/6a303f0a878777fd117a55f3?success=true 200 in 5.9s (next.js: 5.5s, proxy.ts: 15ms, application-code: 388ms)
+ GET /api/auth/csrf 200 in 1278ms (next.js: 1226ms, proxy.ts: 16ms, application-code: 36ms)
+ POST /api/auth/signout 200 in 517ms (next.js: 28ms, proxy.ts: 415ms, application-code: 75ms)
+ GET /login?loggedOut=true 200 in 637ms (next.js: 118ms, proxy.ts: 30ms, application-code: 489ms)
+ GET /login?callbackUrl=%2Forders%2F6a303f0a878777fd117a55f3%3Fsuccess%3Dtrue 200 in 257ms (next.js: 16ms, proxy.ts: 34ms, application-code: 208ms)
+ GET /api/auth/providers 200 in 79ms (next.js: 36ms, proxy.ts: 19ms, application-code: 24ms)
+ GET /api/auth/csrf 200 in 37ms (next.js: 12ms, proxy.ts: 10ms, application-code: 15ms)
+ POST /api/auth/callback/credentials? 200 in 938ms (next.js: 10ms, proxy.ts: 13ms, application-code: 915ms)
+ GET /auth-callback?callbackUrl=%2F 200 in 1478ms (next.js: 1259ms, proxy.ts: 20ms, application-code: 199ms)
+ GET /auth-callback?callbackUrl=%2F 200 in 148ms (next.js: 12ms, proxy.ts: 20ms, application-code: 116ms)
+ GET /admin/dashboard 200 in 3.8s (next.js: 2.8s, proxy.ts: 15ms, application-code: 1005ms)
+ GET /admin/dashboard 200 in 862ms (next.js: 9ms, proxy.ts: 55ms, application-code: 797ms)
+ GET /admin/orders/6a303f0a878777fd117a55f3 200 in 5.3s (next.js: 4.7s, proxy.ts: 11ms, application-code: 565ms)
+ POST /admin/orders/6a303f0a878777fd117a55f3 200 in 1070ms (next.js: 20ms, proxy.ts: 12ms, application-code: 1038ms)
+  └─ ƒ <inline action>({"reason":{"count":168,"fork":false},"status":"fulfilled","value":"m3FUae5YQwQcPSVgXf91qVgEWeobXQViTJx/DZrF0MpJoLrrGlXZr7t5QRCFLJOT6vwNxZfKsfU54MBpDanp+SzAD1l1ygQ3Voz/BrFipxX6KF7Jsb7jbTylFxaFhE2bNeZWZJKyqJACUJ2pMg3TN2PbUGTvmUNDNgRMyhz9"}) in 767ms ..//app/(admin)/admin/orders/[id]/page.tsx
+ POST /admin/orders/6a303f0a878777fd117a55f3 200 in 800ms (next.js: 24ms, proxy.ts: 16ms, application-code: 760ms)
+  └─ ƒ <inline action>({"reason":{"count":168,"fork":false},"status":"fulfilled","value":"sUBzkdqNf5gQBEOsBcdcS4V/jNwUKgmp+3n4SXbDx49fNIJYGmYa89ZXw8v3SexVnwVPRCPVHX8YbckbeTo9eHWpIiAGx+V4ybUNI2kG9jXa74v9a2B8tbftPHa/tzFXZG7vyMK2KgI/o6kCwN2Sr2nOpP4sBGJmyXAMpn+s"}, {}) in 408ms ..//app/(admin)/admin/orders/[id]/page.tsx
+ POST /admin/orders/6a303f0a878777fd117a55f3 200 in 1233ms (next.js: 19ms, proxy.ts: 10ms, application-code: 1204ms)
+  └─ ƒ <inline action>({"reason":{"count":168,"fork":false},"status":"fulfilled","value":"s5ADFi6Z0YQ2sdM5Iuw9Cnn6n1dul8kB89bqeQJBz0DVH1PW0IkHN8VB4ak83KpkiGGQeIrjrCBQJ6db3Uhqy91vK7M+Gn6Qfy6Z77h11EpSHjRAHLTTp9ryp21r/Xx0ytA0j0PH7hZ2LW/Yj1p6/IR6yPBClUPdiN9Icpc8"}) in 532ms ..//app/(admin)/admin/orders/[id]/page.tsx
+ GET /api/auth/providers 200 in 78ms (next.js: 26ms, proxy.ts: 18ms, application-code: 33ms)
+ GET /api/auth/csrf 200 in 1826ms (next.js: 957ms, proxy.ts: 790ms, application-code: 80ms)
+ POST /api/auth/callback/credentials? 200 in 1049ms (next.js: 37ms, proxy.ts: 22ms, application-code: 990ms)
+ GET /auth-callback?callbackUrl=%2Forders%2F6a303f0a878777fd117a55f3%3Fsuccess%3Dtrue 200 in 325ms (next.js: 21ms, proxy.ts: 16ms, application-code: 288ms)
+ GET /auth-callback?callbackUrl=%2Forders%2F6a303f0a878777fd117a55f3%3Fsuccess%3Dtrue 200 in 600ms (next.js: 37ms, proxy.ts: 48ms, application-code: 516ms)
+ GET /orders/6a303f0a878777fd117a55f3?success=true 200 in 1396ms (next.js: 65ms, proxy.ts: 19ms, application-code: 1313ms)
+ GET /orders/6a303f0a878777fd117a55f3?success=true 200 in 1543ms (next.js: 58ms, proxy.ts: 236ms, application-code: 1249ms)
+ GET /orders 200 in 3.5s (next.js: 3.0s, proxy.ts: 11ms, application-code: 548ms)
+ GET /orders/6a303f0a878777fd117a55f3 200 in 317ms (next.js: 39ms, proxy.ts: 11ms, application-code: 267ms)
+ GET /products/6a303bce878777fd117a55a4 200 in 12.9s (next.js: 5.5s, proxy.ts: 9ms, application-code: 7.4s)
+ POST /products/6a303bce878777fd117a55a4 200 in 4.6s (next.js: 20ms, proxy.ts: 9ms, application-code: 4.6s)
+  └─ ƒ <inline action>({"reason":{"count":168,"fork":false},"status":"fulfilled","value":"KmF7H+qKETmgZGtV8UTouitNMxUUli5JXdM6rg49jGEFuZPGYfpQEH1IBWksoQweis6IbCWWGfCT8/62VNlqNhgb0YoVnEFbKY4Ox/sAQCfcsmNuk+A3COOkTfe/NeNCrdsWd35IhaBmouBWKciYmg2F+y9KaAuGdhzvsFIS"}, {}) in 1475ms ..//app/(customer)/products/[id]/page.tsx

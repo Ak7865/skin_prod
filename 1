@@ -1,0 +1,271 @@
+# Implementation Plan: Skin-Care & Beauty E-Commerce Platform (Revised)
+
+This document outlines the detailed engineering plan to build a production-ready, full-stack skin-care and beauty products e-commerce platform using Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, MongoDB, Mongoose, NextAuth (session-based, no custom JWT), and Cloudinary.
+
+---
+
+## Technical Stack & Packages
+We will install the following packages:
+- `mongoose`: For structured schemas, relationships, validation, and indexing.
+- `mongodb`: The underlying client for the NextAuth MongoDB adapter.
+- `@auth/mongodb-adapter`: Official adapter for NextAuth to store users, accounts, and sessions in MongoDB.
+- `next-auth`: Auth.js (v4/v5 compatibility) configured for database-backed session storage.
+- `bcryptjs` & `@types/bcryptjs`: Hashing user passwords securely.
+- `zod`: Type-safe schema validations for API endpoints, server actions, and forms.
+- `cloudinary`: SDK for server-side product image upload and deletion.
+- `lucide-react`: Clean icons.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Authentication Strategy**: NextAuth will be configured with `strategy: "database"`. This ensures a session document is created in MongoDB (`sessions` collection) upon login, and a secure HTTP-only session cookie (random UUID, no JWT) is stored on the client.
+>
+> **Tailwind CSS v4 Configuration**: We will customize colors and design systems directly inside `app/globals.css` using the new `@theme` block, aligning with Tailwind CSS v4 specifications.
+>
+> **Analytics Visualizations**: Since recharts/other React charts sometimes experience dependency friction with React 19, we will build **premium, responsive SVG-based charts** directly inside React components to guarantee 100% compatibility and native performance.
+
+---
+
+## Proposed Database Models (Mongoose)
+All models will be placed in `src/models/` or `lib/models/`.
+
+### 1. `User` (Collection: `users`)
+- `name`: String (Required)
+- `email`: String (Required, Unique, Indexed)
+- `password`: String (Hashed, optional for OAuth)
+- `image`: String (Avatar URL)
+- `role`: String (Enum: `'customer'`, `'admin'`; Default: `'customer'`)
+- `status`: String (Enum: `'active'`, `'inactive'`; Default: `'active'`)
+- `emailVerified`: Date
+- `createdAt`, `updatedAt`
+
+### 2. `Product` (Collection: `products`)
+- `name`: String (Required)
+- `slug`: String (Required, Unique, Indexed)
+- `description`: String (Required)
+- `price`: Number (Required)
+- `discount`: Number (Percentage, Default: 0)
+- `images`: Array of `{ public_id: String, secure_url: String, width: Number, height: Number, alt: String }`
+- `category`: ObjectId (Ref: `Category`, Required)
+- `brand`: String (Required)
+- `stock`: Number (Required, Default: 0)
+- `ingredients`: [String]
+- `usageInstructions`: String
+- `benefits`: [String]
+- `tags`: [String]
+- `skinType`: [String] (Enums: `'sensitive'`, `'oily'`, `'dry'`, `'combination'`, `'all'`)
+- `concernType`: [String] (Enums: `'acne'`, `'anti-aging'`, `'dark-spots'`, `'dryness'`, `'pores'`, `'dullness'`, `'redness'`)
+- `isFeatured`: Boolean (Default: false)
+- `rating`: Number (Default: 0)
+- `numReviews`: Number (Default: 0)
+
+### 3. `Category` (Collection: `categories`)
+- `name`: String (Required, Unique)
+- `slug`: String (Required, Unique)
+- `description`: String
+- `image`: String (URL)
+
+### 4. `Cart` (Collection: `carts`)
+- `user`: ObjectId (Ref: `User`, Unique)
+- `items`: Array of `{ product: ObjectId (Ref: Product), quantity: Number }`
+
+### 5. `Wishlist` (Collection: `wishlists`)
+- `user`: ObjectId (Ref: `User`, Unique)
+- `products`: [ObjectId (Ref: `Product`)]
+
+### 6. `Address` (Collection: `addresses`)
+- `user`: ObjectId (Ref: `User`)
+- `name`: String (Recipient name)
+- `street`: String
+- `city`: String
+- `state`: String
+- `postalCode`: String
+- `country`: String
+- `phone`: String
+- `isDefault`: Boolean (Default: false)
+
+### 7. `PaymentMethod` (Collection: `payment_methods`)
+- `user`: ObjectId (Ref: `User`)
+- `cardBrand`: String
+- `last4`: String
+- `expiryMonth`: Number
+- `expiryYear`: Number
+
+### 8. `Order` (Collection: `orders`)
+- `user`: ObjectId (Ref: `User`)
+- `items`: Array of `{ product: ObjectId (Ref: Product), name: String, price: Number, quantity: Number, image: String }`
+- `shippingAddress`: Object (Address details)
+- `paymentMethod`: Object (Card brand and last4)
+- `paymentStatus`: String (Enum: `'pending'`, `'paid'`, `'failed'`)
+- `totalPrice`: Number
+- `shippingPrice`: Number
+- `taxPrice`: Number
+- `grandTotal`: Number
+- `status`: String (Enum: `'pending_confirmation'`, `'confirmed'`, `'shipping'`, `'tracking_updated'`, `'delivered'`, `'cancelled'`)
+- `statusHistory`: Array of `{ status: String, changedAt: Date, note: String }`
+- `tracking`: `{ courierName: String, trackingId: String, shippingNote: String, estimatedDeliveryDate: Date }`
+- `createdAt`, `updatedAt`
+
+### 9. `Review` (Collection: `reviews`)
+- `user`: ObjectId (Ref: `User`, Required)
+- `product`: ObjectId (Ref: `Product`, Required)
+- `rating`: Number (1-5, Required)
+- `comment`: String (Required)
+- `isVerifiedPurchase`: Boolean (Default: false)
+- `isHidden`: Boolean (Default: false)
+- `createdAt`
+
+### 10. `Notification` (Collection: `notifications`)
+- `user`: ObjectId (Ref: `User`, nullable for all admins)
+- `type`: String (Enum: `'new_order'`, `'accepted_order'`, `'rejected_order'`, `'tracking_updated'`, `'delivered_order'`, `'low_stock'`)
+- `title`: String
+- `message`: String
+- `isRead`: Boolean (Default: false)
+- `link`: String
+- `createdAt`
+
+### 11. `InventoryLog` (Collection: `inventory_logs`)
+- `product`: ObjectId (Ref: `Product`)
+- `changeType`: String (Enum: `'sale'`, `'restock'`, `'adjustment'`)
+- `quantity`: Number
+- `previousStock`: Number
+- `newStock`: Number
+- `note`: String
+- `createdAt`
+
+---
+
+## Routing and UI Groups
+We will split the application into separate layout files and route groups:
+
+```
+app/
+├── (customer)/                # Customer Storefront Route Group
+│   ├── layout.tsx             # Customer layout (Nav with logo, categories, profile, footer)
+│   ├── page.tsx               # Beautiful homepage (Hero, collection, best sellers)
+│   ├── products/
+│   │   ├── page.tsx           # Product listing with filters (categories, skin concerns, rating, price)
+│   │   └── [id]/
+│   │       └── page.tsx       # Detail page (Ingredients, usage, rating breakdown, reviews, recommendations)
+│   ├── cart/
+│   │   └── page.tsx           # Cart listing & editing
+│   ├── wishlist/
+│   │   └── page.tsx           # Saved items
+│   ├── checkout/
+│   │   └── page.tsx           # Form with saved addresses, saved payment cards, and order placement
+│   ├── orders/
+│   │   ├── page.tsx           # Order history
+│   │   └── [id]/
+│   │       └── page.tsx       # Order details & tracking timeline
+│   └── profile/
+│   │   └── page.tsx           # Profile updates, change password, saved addresses/cards
+│
+├── (admin)/                   # Admin Dashboard Route Group
+│   ├── layout.tsx             # Admin layout (Sidebar navigation, Topbar with profile & notifications)
+│   ├── admin/
+│   │   ├── dashboard/
+│   │   │   └── page.tsx       # KPI cards, Custom date range, SVG Analytics charts, best sellers
+│   │   ├── products/
+│   │   │   ├── page.tsx       # Product listing table & actions
+│   │   │   ├── new/
+│   │   │   │   └── page.tsx   # Add product form (Multiple image uploads to Cloudinary)
+│   │   │   └── [id]/
+│   │   │       └── edit/
+│   │   │           └── page.tsx # Edit product details & images
+│   │   ├── categories/
+│   │   │   └── page.tsx       # List, create, and delete categories
+│   │   ├── orders/
+│   │   │   ├── page.tsx       # List all orders (filter by status)
+│   │   │   └── [id]/
+│   │   │       └── page.tsx   # Order details (Accept/reject, update status, add tracking)
+│   │   └── customers/
+│   │       └── page.tsx       # Customer list, activity summary, toggles (activate/deactivate)
+│
+├── (auth)/                    # Authentication Route Group
+│   ├── layout.tsx             # Clean minimal split layout for auth
+│   ├── login/
+│   │   └── page.tsx           # Credentials + Google Sign-In
+│   └── signup/
+│       └── page.tsx           # Sign up form
+│
+├── api/
+│   ├── auth/[...nextauth]/    # Route Handler for NextAuth
+│   │   └── route.ts
+│   └── upload/
+│       └── route.ts           # Cloudinary image upload handler for admins
+```
+
+---
+
+## Authentication Configuration
+- **Adapter**: `@auth/mongodb-adapter` combined with a MongoDB connection client promise.
+- **Session Strategy**: `"database"` which writes documents to `sessions` database collection.
+- **Provider 1 (Credentials)**: Custom verification against User schema via Mongoose. Validates password via `bcrypt.compare`.
+- **Provider 2 (Google)**: OAuth provider configuring profile mappings automatically into `users` collection.
+- **Authorization**: Custom `callbacks.session` extracts role/status from DB user and appends to NextAuth session.
+- **Protection**: `middleware.ts` intercepts `/admin` routes (requiring role `admin`) and `/profile`, `/checkout`, `/orders` (requiring authenticated session).
+
+---
+
+## Cloudinary & Image Upload Flow
+1. Admin uploads images through the dashboard form.
+2. The form sends images to `api/upload` (multipart parser/direct buffer streaming) using the Cloudinary Node SDK.
+3. The SDK uploads the image to the skin-care product folder, returning optimized urls and public IDs.
+4. Mongoose database model stores: `public_id`, `secure_url`, `width`, `height`, `alt`.
+5. Product cards and detail screens retrieve these secure optimized URLs.
+
+---
+
+## Recommendation & Search Logic
+- **Search System**: Uses MongoDB index on text fields (`name`, `brand`, `tags`, `concernType`, `category`) with case-insensitive regex or text search.
+- **Recommendations**:
+  - *Similar Products*: Same category or concern.
+  - *Personalized*: Based on past ordered categories and skin concerns.
+
+---
+
+## Analytics Aggregations
+For the dashboard, we will implement complex aggregation pipelines using Mongoose:
+- **Revenue & Orders**: Grouping orders by day/week/month/year within a date range.
+- **KPI Metrics**: Total revenue, count of orders, average order value, delivered/cancelled counts.
+- **Low Stock**: Matching products where `stock <= 5`.
+- **Top Categories & Customers**: Grouping orders to rank high-value items/users.
+
+---
+
+## Security & Authentication Enhancements (New Plan)
+
+### 1. Mandatory Authentication for Cart & Wishlist Actions
+- Ensure that if a guest user clicks **Add to Cart**, **Add to Wishlist**, or **Buy Now**, they are immediately redirected to the `/login` page with a `callbackUrl` pointing back to the product details page.
+- We will implement this check at the page level inside the inline server action handlers (`handleAddToCart`, `handleToggleWishlist`) on the Home, Catalog, and Product Detail pages.
+
+### 2. DDoS & Brute-Force Rate Limiting (DDoS Protection)
+- Implement a lightweight, in-memory Token Bucket rate-limiting middleware directly inside [proxy.ts](file:///c:/Users/ah076/OneDrive/Desktop/skin_prod/proxy.ts):
+  - **General API/Page requests**: Limit to 100 requests per minute per IP address.
+  - **Sensitive Auth endpoints** (`/login`, `/signup`, `/api/auth/*`): Limit to 15 requests per minute per IP to mitigate brute-force and credential-stuffing attacks.
+  - If a client exceeds the limit, the middleware will immediately intercept the request and return an HTTP `429 Too Many Requests` response.
+
+### 3. NoSQL Injection Mitigation (SQL Injection Equivalent)
+- Ensure all query parameter inputs parsed from `searchParams` on the storefront and admin catalog actions are explicitly sanitized/cast to string primitives using `String(...)` before being supplied to Mongoose.
+- This prevents attackers from passing complex query operators (e.g. `{ $ne: null }` instead of a search string) to modify query criteria.
+
+### 4. Mobile Responsiveness & UI Polishing
+- Review the customer and admin header layouts to ensure user name and avatar are fully visible and reflow neatly on smaller portrait screens.
+- Test responsive grids and touch-friendly target elements across device frames.
+
+---
+
+## Verification Plan
+
+### Automated Verification
+- Next.js build checks (`npm run build`) to ensure syntax, Babel config removal, and TypeScript compilation success.
+- Verify rate limiting rules by simulating concurrent requests in local tests.
+
+### Manual Verification
+- **Auth Redirects**: Access `/products` or homepage as a guest, click 'Add to Cart', and verify immediate redirect to `/login`.
+- **User State Header**: Log in as a customer and verify the header removes the Sign In/Sign Up buttons and displays the profile picture/initials and name.
+- **NoSQL Injection**: Send mock request query objects to `/products` and ensure they are parsed as plain strings rather than database operators.
+- **DDoS/Rate Limit Testing**: Verify that hitting endpoints repeatedly triggers a `429` block.
+- **Mobile Responsive Check**: Use mobile viewport dimensions to verify UI elements scale and adapt.
